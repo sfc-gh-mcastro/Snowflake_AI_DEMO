@@ -1,0 +1,157 @@
+{
+  "test_cases": [
+    {
+      "name": "Sample Input from Problem Description",
+      "description": "Test case provided in the problem statement",
+      "input": {
+        "m": 90.0,
+        "k": 2,
+        "d": 400,
+        "name": ["iStreet", "HR"],
+        "owned": [10, 0],
+        "prices": [
+          [4.54, 5.53, 6.56, 5.54, 7.60],
+          [30.54, 27.53, 24.42, 20.11, 17.50]
+        ]
+      },
+      "expected_behavior": "Should sell iStreet (declining) and buy HR (oversold)",
+      "notes": "iStreet trending up, HR trending down sharply"
+    },
+    {
+      "name": "First Day - No Holdings",
+      "description": "Starting scenario with $100 and no stocks",
+      "input": {
+        "m": 100.0,
+        "k": 3,
+        "d": 400,
+        "name": ["AAPL", "GOOGL", "MSFT"],
+        "owned": [0, 0, 0],
+        "prices": [
+          [145.0, 147.0, 149.0, 151.0, 153.0],
+          [2750.0, 2780.0, 2800.0, 2820.0, 2850.0],
+          [340.0, 342.0, 344.0, 346.0, 348.0]
+        ]
+      },
+      "expected_behavior": "Should buy stocks with strongest upward momentum",
+      "notes": "All stocks trending upward, should allocate capital"
+    },
+    {
+      "name": "Last Day - Liquidation",
+      "description": "Final day, must sell all holdings",
+      "input": {
+        "m": 50.0,
+        "k": 2,
+        "d": 1,
+        "name": ["AAPL", "MSFT"],
+        "owned": [5, 3],
+        "prices": [
+          [150.0, 152.0, 154.0, 156.0, 158.0],
+          [345.0, 347.0, 349.0, 351.0, 353.0]
+        ]
+      },
+      "expected_behavior": "Should sell all holdings (AAPL: 5, MSFT: 3)",
+      "notes": "Last day liquidation rule"
+    },
+    {
+      "name": "Mixed Trends",
+      "description": "Stocks with different trend patterns",
+      "input": {
+        "m": 200.0,
+        "k": 4,
+        "d": 100,
+        "name": ["STOCK_A", "STOCK_B", "STOCK_C", "STOCK_D"],
+        "owned": [10, 5, 0, 8],
+        "prices": [
+          [50.0, 52.0, 54.0, 56.0, 58.0],
+          [100.0, 98.0, 96.0, 94.0, 92.0],
+          [25.0, 25.5, 26.0, 26.5, 27.0],
+          [75.0, 74.0, 73.0, 72.0, 71.0]
+        ]
+      },
+      "expected_behavior": "Sell STOCK_B and STOCK_D (declining), buy STOCK_A or STOCK_C (rising)",
+      "notes": "A: strong uptrend, B: strong downtrend, C: mild uptrend, D: downtrend"
+    },
+    {
+      "name": "Volatile Market",
+      "description": "High volatility scenario",
+      "input": {
+        "m": 150.0,
+        "k": 2,
+        "d": 200,
+        "name": ["VOL_STOCK", "STABLE_STOCK"],
+        "owned": [0, 0],
+        "prices": [
+          [100.0, 110.0, 95.0, 105.0, 90.0],
+          [50.0, 50.5, 50.3, 50.7, 50.5]
+        ]
+      },
+      "expected_behavior": "May avoid volatile stock, prefer stable stock",
+      "notes": "VOL_STOCK has high volatility, STABLE_STOCK is stable"
+    },
+    {
+      "name": "Cash Constraint",
+      "description": "Limited cash with expensive stocks",
+      "input": {
+        "m": 10.0,
+        "k": 2,
+        "d": 300,
+        "name": ["CHEAP", "EXPENSIVE"],
+        "owned": [0, 0],
+        "prices": [
+          [5.0, 5.2, 5.4, 5.6, 5.8],
+          [1000.0, 1010.0, 1020.0, 1030.0, 1040.0]
+        ]
+      },
+      "expected_behavior": "Can only afford CHEAP stock",
+      "notes": "Budget constraint forces choice"
+    },
+    {
+      "name": "Pending Cash Scenario",
+      "description": "Test that sale proceeds aren't immediately available",
+      "input": {
+        "m": 10.0,
+        "k": 2,
+        "d": 350,
+        "name": ["STOCK_A", "STOCK_B"],
+        "owned": [10, 0],
+        "prices": [
+          [50.0, 48.0, 46.0, 44.0, 42.0],
+          [20.0, 21.0, 22.0, 23.0, 24.0]
+        ]
+      },
+      "expected_behavior": "Sell STOCK_A but can't immediately use proceeds to buy STOCK_B",
+      "notes": "Should have pending_cash = 420, available cash = 10"
+    },
+    {
+      "name": "Take Profit Scenario",
+      "description": "Stock with large gain should trigger profit-taking",
+      "input": {
+        "m": 100.0,
+        "k": 1,
+        "d": 250,
+        "name": ["WINNER"],
+        "owned": [10],
+        "prices": [
+          [50.0, 55.0, 60.0, 65.0, 70.0]
+        ]
+      },
+      "expected_behavior": "Should sell to lock in 40% profit",
+      "notes": "Strong momentum but take profit at threshold"
+    }
+  ],
+  "performance_targets": {
+    "minimum_score": 15.0,
+    "target_score": 20.0,
+    "excellent_score": 25.0,
+    "notes": "score = 5 * ln(money). Starting with $100, score ≈ 23.03"
+  },
+  "validation_checklist": [
+    "Output format matches specification (N followed by N transaction lines)",
+    "Transactions respect cash constraints",
+    "Transactions respect share ownership constraints",
+    "Cash from sales marked as pending (not immediately available)",
+    "Last day: all positions liquidated",
+    "No negative cash or share values",
+    "Stock names match input exactly (case sensitive)"
+  ]
+}
